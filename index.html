@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title>html5</title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<script src="js/mui.min.js"></script>
+		<script type="text/javascript" src="js/TouchMove.js"></script>
+		<style>
+			#point {
+				position: absolute;
+				background: red;
+				width: 20px;
+				height: 20px;
+				top: 20%;
+				left: 20%;
+			}
+
+			#point2 {
+				position: absolute;
+				background: blue;
+				width: 20px;
+				height: 20px;
+				top: 20%;
+				left: 40%;
+			}
+
+			#img {
+				position: absolute;
+				background: green;
+				width: 80%;
+				/*height: 80%;*/
+				/*top: 30%;
+				left: 30%;*/
+				border: 1px solid red;
+			}
+
+			#bg {
+				position: absolute;
+				background-color: green;
+				border-radius: 50%
+			}
+
+			#content {
+				background-color: rgba(0, 0, 0, 0.3);
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">touchmove</h1>
+		</header>
+		<div class="mui-content mui-fullscreen" id="content">
+
+			<div>
+				<div id="Touchs">Touchs</div>
+				<div>-------------------------------------</div>
+				<div id="Touch1">Touch1-red</div>
+				<div>--</div>
+				<div>clientX：触摸目标在视口中的x坐标。</div>
+				<div id="clientX1">clientX</div>
+				<div>clientY：触摸目标在视口中的y坐标。</div>
+				<div id="clientY1">clientY</div>
+				<div>identifier：标识触摸的唯一ID。</div>
+				<div id="identifier">identifier</div>
+				<div>target：触目的DOM节点目标。</div>
+				<div id="target">target</div>
+				<div>---------------------</div>
+
+				<div id="Touchs2">Touchs</div>
+				<div id="Touch2">Touch2-blue</div>
+				<div>--</div>
+				<div>clientX：触摸目标在视口中的x坐标。</div>
+				<div id="clientX2">clientX</div>
+				<div>clientY：触摸目标在视口中的y坐标。</div>
+				<div id="clientY2">clientY</div>
+
+				<!--<div>pageX：触摸目标在页面中的x坐标。</div>
+				<div id="pageX">pageX</div>
+
+				<div>pageY：触摸目标在页面中的y坐标。</div>
+				<div id="pageY">pageY</div>
+
+				<div>screenX：触摸目标在屏幕中的x坐标。</div>
+				<div id="screenX">screenX</div>
+
+				<div>screenY：触摸目标在屏幕中的y坐标。</div>
+				<div id="screenY">screenY</div>-->
+
+			</div>
+			<div id="point"></div>
+			<div id="point2"></div>
+
+		</div>
+		<!--<img id='img' src="image/u123.png"></img>-->
+	</body>
+	<script type="text/javascript" charset="utf-8">
+		mui.init();
+		mui.plusReady(function() {
+			var webview = {
+				height: plus.screen.resolutionHeight - plus.navigator.getStatusbarHeight(), //屏幕高度-状态栏高度
+				width: plus.screen.resolutionWidth //屏幕宽度
+			};
+
+			var table = document.getElementById("content");
+			//屏幕宽度的1/4圆圈的范围区域内
+			var div = document.createElement('div');
+			div.id = 'bg';
+			table.appendChild(div);
+			div.style.width = webview.width / 2 + 2 + 'px';
+			div.style.height = webview.width / 2 + 2 + 'px';
+			div.style.left = webview.width / 4 - 1 + 'px';
+			div.style.top = webview.height / 2 - (webview.width / 4) - 1 + 'px';
+
+			var img = document.createElement('img');
+			img.id = 'img';
+			img.src = 'image/u123.png';
+			setTimeout(function() {
+				table.appendChild(img);
+				TouchMove.addTouchListener(img);
+			}, 1000);
+			//			setTimeout(function() {
+			//				table.appendChild(img);
+			//				//获取img坐标和宽高
+			//				var img_width = img.offsetWidth * 1;
+			//				var img_height = img.offsetHeight * 1;
+			//				console.log('img_width:img_height:' + img_width + '|' + img_height);
+			//
+			//				img.style.left = (webview.width - img_width) / 2 + 'px';
+			//				img.style.top = (webview.height - img_height) / 2 + 'px';
+			//
+			//			}, 1000);
+
+		});
+
+		//		mui.plusReady(function() {
+		//			var Touch = document.getElementById("Touch");
+		//			var point = document.getElementById("point");
+		//			var img = document.getElementById("img");
+		//			var start = false;
+		//			var end = false;
+		//			var moved = false;
+		//			var one = false;
+		//			var screen = {
+		//				height: plus.screen.resolutionHeight,
+		//				width: plus.screen.resolutionWidth
+		//			};
+		//			//放大缩小
+		//			var changex = 0;
+		//			var changey = 0;
+		//			//移动
+		//			var movedx = 0;
+		//			var movedy = 0;
+		//
+		//			document.addEventListener('touchstart', touch, false);
+		//			document.addEventListener('touchmove', touch, false);
+		//			document.addEventListener('touchend', touch, false);
+		//
+		//			function touch(event) {
+		//				var event = event || window.event;
+		//
+		//				switch(event.type) {
+		//					case "touchstart":
+		//						one = false;
+		//						moved = false;
+		//						Touchs.innerHTML = "Touch started";
+		//
+		//						if(event.touches[1] != undefined) {
+		//							one = false;
+		//							Touchs2.innerHTML = "Touch started";
+		//							changedata2(event.touches[1]);
+		//						} else {
+		//							Touchs2.innerHTML = "Touch";
+		//							end = false;
+		//							changedata(event.touches[0]);
+		//						}
+		//						break;
+		//					case "touchend":
+		//						one = false;
+		//						moved = false;
+		//						Touchs.innerHTML = "Touch end";
+		//
+		//						if(event.changedTouches[1] != undefined) {
+		//							one = false;
+		//							Touchs2.innerHTML = "Touch end";
+		//							changedata2(event.changedTouches[1]);
+		//						} else {
+		//							Touchs2.innerHTML = "Touch";
+		//							end = true;
+		//							changedata(event.changedTouches[0]);
+		//							one = true;
+		//						}
+		//						break;
+		//					case "touchmove":
+		//						moved = true;
+		//						event.preventDefault(); //阻止滚动
+		//						Touchs.innerHTML = "Touch moved";
+		//						one = false;
+		//						if(event.touches[1] != undefined) {
+		//							one = false;
+		//							Touchs2.innerHTML = "Touch moved";
+		//							changedata2(event.touches[1]);
+		//							changepoint2(event.touches[0], event.touches[1]);
+		//						} else {
+		//							one = true;
+		//							Touchs2.innerHTML = "Touch";
+		//							end = false;
+		//							changedata(event.touches[0]);
+		//						}
+		//						break;
+		//				}
+		//
+		//			}
+		//
+		//			function changedata(data) {
+		//				document.getElementById("clientX1").innerHTML = data.clientX;
+		//				document.getElementById("clientY1").innerHTML = data.clientY;
+		//				document.getElementById("identifier").innerHTML = data.identifier;
+		//				//				document.getElementById("pageX").innerHTML = data.pageX;
+		//				//				document.getElementById("pageY").innerHTML = data.pageY;
+		//				//				document.getElementById("screenX").innerHTML = data.screenX;
+		//				//				document.getElementById("screenY").innerHTML = data.screenY;
+		//				document.getElementById("target").innerHTML = data.target.getAttribute('id');
+		//				document.getElementById("point").style.top = data.clientY + 'px';
+		//				document.getElementById("point").style.left = data.clientX + 'px';
+		//				//移动图片
+		//				if(data.target.getAttribute('id') == 'img') {
+		//					//					if(one) {
+		//					if(moved == false) {
+		//						//手指离开屏幕重置手指的坐标
+		//						movedx = 0;
+		//						movedy = 0;
+		//					}
+		//					if(movedx == 0) {
+		//						movedx = data.clientX;
+		//						movedy = data.clientY;
+		//					} else {
+		//						var x = movedx - data.clientX;
+		//						var y = movedy - data.clientY;
+		//
+		//						var img_x = img.offsetLeft * 1;
+		//						var img_y = img.offsetTop * 1;
+		//						var img_width = img.offsetWidth * 1;
+		//						var img_height = img.offsetHeight * 1;
+		//
+		//						if(x >= 0) {
+		//							img.style.left = (img_x - Math.abs(x)) + 'px';
+		//						} else {
+		//							img.style.left = (img_x + Math.abs(x)) + 'px';
+		//						}
+		//
+		//						if(y >= 0) {
+		//							img.style.top = (img_y - Math.abs(y)) + 'px';
+		//						} else {
+		//							img.style.top = (img_y + Math.abs(y)) + 'px';
+		//						}
+		//						movedx = data.clientX;
+		//						movedy = data.clientY;
+		//					}
+		//					KeepImageInScreen();
+		//					//					}
+		//				}
+		//
+		//			}
+		//
+		//			function changedata2(data) {
+		//				document.getElementById("clientX2").innerHTML = data.clientX;
+		//				document.getElementById("clientY2").innerHTML = data.clientY;
+		//				//				document.getElementById("identifier").innerHTML = data.identifier;
+		//				//				document.getElementById("pageX").innerHTML = data.pageX;
+		//				//				document.getElementById("pageY").innerHTML = data.pageY;
+		//				//				document.getElementById("screenX").innerHTML = data.screenX;
+		//				//				document.getElementById("screenY").innerHTML = data.screenY;
+		//				//				document.getElementById("target").innerHTML = data.target.getAttribute('id');
+		//				document.getElementById("point2").style.top = data.clientY + 'px';
+		//				document.getElementById("point2").style.left = data.clientX + 'px';
+		//			}
+		//
+		//			function changepoint2(data1, data2) {
+		//				if(one == false) {
+		//					var x1 = parseInt(data1.clientX);
+		//					var y1 = parseInt(data1.clientY);
+		//					var x2 = parseInt(data2.clientX);
+		//					var y2 = parseInt(data2.clientY);
+		//					var x = Math.abs(x1 - x2);
+		//					var y = Math.abs(y1 - y2);
+		//					//				console.log('---------------');
+		//					//				console.log('x|y:' + x + '|' + y);
+		//
+		//					var changex2 = changex - x;
+		//					var changey2 = changey - y;
+		//
+		//					//				console.log('changex:' + changex);
+		//					//				console.log('changey:' + changey);
+		//					//				console.log('x:' + x);
+		//					//				console.log('y:' + y);
+		//					//				console.log('changex2:' + changex2);
+		//					//				console.log('changey2:' + changey2);
+		//
+		//					var img_width = img.offsetWidth * 1;
+		//					var img_height = img.offsetHeight * 1;
+		//
+		//					//改变宽度
+		//					if(changex2 >= 0) {
+		//						img.style.width = (img_width - Math.abs(changex2)) + 'px';
+		//					} else {
+		//						img.style.width = (img_width + Math.abs(changex2)) + 'px';
+		//					}
+		//					//改变高度
+		//					if(changey2 > 0) {
+		//						img.style.height = (img_height - Math.abs(changey2)) + 'px';
+		//					} else {
+		//						img.style.height = (img_height + Math.abs(changey2)) + 'px';
+		//					}
+		//
+		//					changex = x;
+		//					changey = y;
+		//
+		//					var img_width = img.offsetWidth * 1;
+		//					var img_height = img.offsetHeight * 1;
+		//					img.style.top = (screen.height - img_height) / 2 + 'px';
+		//					img.style.left = (screen.width - img_width) / 2 + 'px';
+		//				}
+		//			}
+		//
+		//			/**
+		//			 *保持图片在屏幕内
+		//			 */
+		//			function KeepImageInScreen() {
+		//				var img_x = img.offsetLeft * 1;
+		//				var img_y = img.offsetTop * 1;
+		//				var img_width = img.offsetWidth * 1;
+		//				var img_height = img.offsetHeight * 1;
+		//				//				if(img_x < 0 || img_y < 0 || (img_x + img_width) > screen.width || (img_y + img_height) > screen.height) {
+		//				//					img.style.top = (screen.height - img_height) / 2 + 'px';
+		//				//					img.style.left = (screen.width - img_width) / 2 + 'px';
+		//				//				}
+		//				//越过左边
+		//				if(img_x < 0) {
+		//					img.style.left = '0px';
+		//				}
+		//				//越过顶部
+		//				if(img_y < 0) {
+		//					img.style.top = '0px';
+		//				}
+		//				//越过右边
+		//				if((img_x + img_width) > screen.width) {
+		//					img.style.left = (screen.width - img_width) + 'px';
+		//				}
+		//				//越过底部
+		//				if((img_y + img_height) > screen.height) {
+		//					img.style.top = (screen.height - img_height) + 'px';
+		//				}
+		//			}
+		//		});
+	</script>
+
+</html>
