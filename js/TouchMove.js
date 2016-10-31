@@ -223,26 +223,18 @@ var TouchMove = (function(mod) {
 					table.style.height = table_height * (table_width / (table_width + Math.abs(change)));
 				}
 
-				//设置table居中
 				//获取设置后table的宽高
-//				var table_width = table.offsetWidth;
-//				var table_height = table.offsetHeight;
-//
-//				table.style.left = (screen.width - table_width) / 2 + 'px';
-//				table.style.top = (screen.height - table_height) / 2 + 'px';
+				var table_x_after = table.offsetLeft;
+				var table_y_after = table.offsetTop;
+				var table_width_after = table.offsetWidth;
+				var table_height_after = table.offsetHeight;
+				if(table_y_after + table_height_after <= screen.height / 2 + screen.width / 4) {
+					table.style.top = table_y_after + Math.abs(change) + 'px';
+				}
+				if(table_x_after + table_width_after <= screen.width * 3 / 4) {
+					table.style.left = table_x_after + Math.abs(change) + 'px';
+				}
 			}
-
-			//改变高度
-			//			if(Math.abs(changey2) <= 15) {
-			//				if(changey2 >= 0) { //缩小
-			//					if(table_height - Math.abs(changey2) >= screen.width / 2) {
-			//						//缩小后的高度要大于圆圈的直径
-			//						table.style.height = (table_height - Math.abs(changey2)) + 'px';
-			//					}
-			//				} else { //放大
-			//					table.style.height = (table_height + Math.abs(changey2)) + 'px';
-			//				}
-			//			}
 
 			//记录本次change
 			changex = x;
