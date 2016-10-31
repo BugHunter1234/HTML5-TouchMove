@@ -36,12 +36,34 @@ var TouchMove = (function(mod) {
 			height: plus.screen.resolutionHeight - plus.navigator.getStatusbarHeight(), //屏幕高度-状态栏高度
 			width: plus.screen.resolutionWidth //屏幕宽度
 		};
+		//获取table的宽高
 		var table_width = table.offsetWidth;
 		var table_height = table.offsetHeight;
-		console.log('table_width:table_height:' + table_width + '|' + table_height);
+
+		//根据宽高的大小判断是否放大和如何放大
+		if(table_width > table_height) {
+			//宽大于高
+			if(table_height < screen.width / 2) {
+				//高度小于屏幕的一半
+				table.style.height = screen.width / 2 + 'px'; //设置table的高度为屏幕1/2的宽度
+				table.style.width = table_width * (screen.width / 2 / table_height) + 'px'; //宽度按比例放大
+			}
+		} else {
+			//高大于宽
+			if(table_width < screen.width / 2) {
+				//宽度小于屏幕的一半
+				table.style.width = screen.width / 2 + 'px'; //设置图片的宽度为屏幕的宽度
+				table.style.height = table_height * (screen.width / 2 / table_width) + 'px'; //高度按比例放大
+			}
+		}
+
 		//设置table居中
-		table.style.left = (screen.width - table_width) / 2 + 'px';
-		table.style.top = (screen.height - table_height) / 2 + 'px';
+		//获取设置后table的宽高
+		var table_width_original = table.offsetWidth;
+		var table_height_original = table.offsetHeight;
+
+		table.style.left = (screen.width - table_width_original) / 2 + 'px';
+		table.style.top = (screen.height - table_height_original) / 2 + 'px';
 
 		//判断是否在移动
 		var moved = false;
@@ -60,7 +82,6 @@ var TouchMove = (function(mod) {
 
 		function touch(event) {
 			var event = event || window.event;
-
 			switch(event.type) {
 				case "touchstart":
 					moved = false;
@@ -71,21 +92,16 @@ var TouchMove = (function(mod) {
 					moved = false;
 					break;
 				case "touchmove":
-
 					event.preventDefault(); //阻止滚动
-
 					if(event.touches[1] != undefined) {
 						//有第二个触点
-//						changeTable(table, event.touches[0], event.touches[1]); //放大缩小table
+						changeTable(table, event.touches[0], event.touches[1]); //放大缩小table
 					} else {
-						//						changex = 0;
-						//						changey = 0;
 						moveTable(event.touches[0], table); //移动table
 						moved = true;
 					}
 					break;
 			}
-
 		}
 
 		/**
@@ -161,46 +177,9 @@ var TouchMove = (function(mod) {
 				}
 			}
 		}
-		/**
-		 * 将table限制在区域内
-		 * @param {Object} table
-		 */
-		function keepTableInScreen(table) {
-
-			//			if(moved) {
-			//越过左边
-			if(table_x <= 0 && (table_width / 2 - screen.width) < 0) {
-				//				table.style.left = 0;
-				//				table.style.right = (screen.width / 2) + 'px';
-			}
-			//越过右边
-			if((table_x + table_width) >= screen.width && (table_width / 2 - screen.width) < 0) {
-				table.style.left = (screen.width / 4) + 'px';
-			}
-			//			//越过顶部
-			//			if((table_y - 45) <= 0) {
-			//				table.style.top = '45px'; //顶部导航的高度
-			//			}
-
-			//			//越过底部
-			//			if((table_y + table_height) >= screen.height) {
-			//				table.style.top = (screen.height - table_height) + 'px';
-			//			}
-			//			} else {
-			//				//宽度超出
-			//				if((screen.width - table_width) <= 0) {
-			//					table.style.width = screen.width + 'px';
-			//				}
-			//
-			//				//高度超出
-			//				if((screen.height - table_height - 45) <= 0) {
-			//					table.style.height = (screen.height - 45) + 'px';
-			//				}
-			//			}
-
-		}
 
 		function changeTable(table, touch1, touch2) {
+
 			//touch1坐标
 			var x1 = parseInt(touch1.clientX);
 			var y1 = parseInt(touch1.clientY);
@@ -223,27 +202,51 @@ var TouchMove = (function(mod) {
 			//				console.log('changex2:' + changex2);
 			//				console.log('changey2:' + changey2);
 
-			//获取table的宽高
-			var table_width = table.offsetWidth * 1;
-			var table_height = table.offsetHeight * 1;
+			//获取table坐标和宽高
+			var table_x = table.offsetLeft;
+			var table_y = table.offsetTop;
+			var table_width = table.offsetWidth;
+			var table_height = table.offsetHeight;
 
-			//改变宽度
-			if(changex2 >= 0) { //缩小
-				table.style.width = (table_width - Math.abs(changex2)) + 'px';
-			} else { //放大
-				table.style.width = (table_width + Math.abs(changex2)) + 'px';
+			//改变宽度高度
+			if(Math.abs(changex2) <= 15 && Math.abs(changey2) <= 15) {
+				//限制两个触点的变化距离
+				var change = changex2 + changey2; //根据x,y总体的大小判断是缩小还是放大
+				if(change >= 0) { //缩小
+					if(table_width - Math.abs(change) >= screen.width / 2 && table_height - Math.abs(change) >= screen.width / 2) {
+						//缩小后的宽高要大于屏幕的1/2
+						table.style.width = (table_width - Math.abs(change)) + 'px';
+						table.style.height = table_height * (table_width / (table_width - Math.abs(change)));
+					}
+				} else { //放大
+					table.style.width = (table_width + Math.abs(change)) + 'px';
+					table.style.height = table_height * (table_width / (table_width + Math.abs(change)));
+				}
+
+				//设置table居中
+				//获取设置后table的宽高
+//				var table_width = table.offsetWidth;
+//				var table_height = table.offsetHeight;
+//
+//				table.style.left = (screen.width - table_width) / 2 + 'px';
+//				table.style.top = (screen.height - table_height) / 2 + 'px';
 			}
+
 			//改变高度
-			if(changey2 > 0) { //缩小
-				table.style.height = (table_height - Math.abs(changey2)) + 'px';
-			} else { //放大
-				table.style.height = (table_height + Math.abs(changey2)) + 'px';
-			}
-			//记录本次touch
+			//			if(Math.abs(changey2) <= 15) {
+			//				if(changey2 >= 0) { //缩小
+			//					if(table_height - Math.abs(changey2) >= screen.width / 2) {
+			//						//缩小后的高度要大于圆圈的直径
+			//						table.style.height = (table_height - Math.abs(changey2)) + 'px';
+			//					}
+			//				} else { //放大
+			//					table.style.height = (table_height + Math.abs(changey2)) + 'px';
+			//				}
+			//			}
+
+			//记录本次change
 			changex = x;
 			changey = y;
-
-			//keepTableInScreen(table); //将table限制在区域内
 		}
 	}
 

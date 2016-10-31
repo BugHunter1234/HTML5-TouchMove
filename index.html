@@ -31,7 +31,7 @@
 				position: absolute;
 				background: green;
 				width: 80%;
-				/*height: 80%;*/
+				/*height: 20%;*/
 				/*top: 30%;
 				left: 30%;*/
 				border: 1px solid red;
@@ -53,6 +53,9 @@
 		<header class="mui-bar mui-bar-nav">
 			<h1 class="mui-title">touchmove</h1>
 		</header>
+		<nav class="mui-bar mui-bar-tab">
+			<button type="button" class="mui-btn mui-pull-right mui-btn-outlined">确定</button>
+		</nav>
 		<div class="mui-content mui-fullscreen" id="content">
 
 			<div>
@@ -118,10 +121,13 @@
 			var img = document.createElement('img');
 			img.id = 'img';
 			img.src = 'image/u123.png';
-			setTimeout(function() {
+			img.onload = function() {
 				table.appendChild(img);
 				TouchMove.addTouchListener(img);
-			}, 1000);
+			}
+			mui('.mui-bar-tab').on('tap', '.mui-btn', function() {
+				mui.toast('确定');
+			});
 			//			setTimeout(function() {
 			//				table.appendChild(img);
 			//				//获取img坐标和宽高
