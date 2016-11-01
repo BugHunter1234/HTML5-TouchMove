@@ -65,31 +65,28 @@ var TouchMove = (function(mod) {
 		table.style.left = (screen.width - table_width_original) / 2 + 'px';
 		table.style.top = (screen.height - table_height_original) / 2 + 'px';
 
-		//判断是否在移动
-		var moved = false;
 		//移动table时记录手指的坐标
 		var movedx = 0;
 		var movedy = 0;
 		//放大缩小table时记录手指坐标
 		var changex = 0;
 		var changey = 0;
-		//
-		var left = 0;
+		//记录放大缩小后的x,y,宽,高
+		var table_x_after = 0;
+		var table_y_after = 0;
+		var table_width_after = 0;
+		var table_height_after = 0;
+
 		//增加监听
-		document.addEventListener('touchstart', touch, false);
 		document.addEventListener('touchmove', touch, false);
 		document.addEventListener('touchend', touch, false);
 
 		function touch(event) {
 			var event = event || window.event;
 			switch(event.type) {
-				case "touchstart":
-					moved = false;
-					break;
 				case "touchend":
 					movedx = 0;
 					movedy = 0;
-					moved = false;
 					break;
 				case "touchmove":
 					event.preventDefault(); //阻止滚动
@@ -98,7 +95,6 @@ var TouchMove = (function(mod) {
 						changeTable(table, event.touches[0], event.touches[1]); //放大缩小table
 					} else {
 						moveTable(event.touches[0], table); //移动table
-						moved = true;
 					}
 					break;
 			}
@@ -137,7 +133,7 @@ var TouchMove = (function(mod) {
 					movedx = data.clientX;
 					movedy = data.clientY;
 
-					//将table限制在屏幕宽度的1/4圆圈的范围区域内
+					//将table的边界限制在页面中心宽度的1/4圆圈的范围区域内
 					//获取table坐标和宽高
 					var table_x = table.offsetLeft;
 					var table_y = table.offsetTop;
@@ -207,38 +203,59 @@ var TouchMove = (function(mod) {
 			var table_y = table.offsetTop;
 			var table_width = table.offsetWidth;
 			var table_height = table.offsetHeight;
-
+//			console.log("befor:" + table_x + "|" + table_y + "|" + table_width + "|" + table_height);
 			//改变宽度高度
 			if(Math.abs(changex2) <= 15 && Math.abs(changey2) <= 15) {
 				//限制两个触点的变化距离
 				var change = changex2 + changey2; //根据x,y总体的大小判断是缩小还是放大
-				if(change >= 0) { //缩小
-					if(table_width - Math.abs(change) >= screen.width / 2 && table_height - Math.abs(change) >= screen.width / 2) {
+				if(change > 0) { //缩小
+					if(table_width - Math.abs(change) > screen.width / 2 && table_height - Math.abs(change) > screen.width / 2) {
 						//缩小后的宽高要大于屏幕的1/2
 						table.style.width = (table_width - Math.abs(change)) + 'px';
-						table.style.height = table_height * (table_width / (table_width - Math.abs(change)));
+						table.style.height = table_height * ((table_width - Math.abs(change)) / table_width) + 'px';
 					}
 				} else { //放大
 					table.style.width = (table_width + Math.abs(change)) + 'px';
-					table.style.height = table_height * (table_width / (table_width + Math.abs(change)));
+					table.style.height = table_height * ((table_width + Math.abs(change)) / table_width) + 'px';
+				}
+			}
+
+			//将table的边界限制在页面中心宽度的1/4圆圈的范围区域内
+			//获取设置后table的宽高
+			//获取table坐标和宽高
+			if(table_width_after != 0) {
+				var table_x = table.offsetLeft;
+				var table_y = table.offsetTop;
+				var table_width = table.offsetWidth;
+				var table_height = table.offsetHeight;
+				//				console.log("after:" + table_x + "|" + table_y + "|" + table_width + "|" + table_height);
+				//顶部超过界限
+				//			if(table_y_after > screen.height / 2 - screen.width / 4) {
+				//				table.style.top = table_y - Math.abs(change) + 'px';
+				//			}
+				//底部超过界限
+				if(table_y + table_height < screen.height / 2 + screen.width / 4) {
+					table.style.top = table_y + table_height_after - table_height + 'px';
 				}
 
-				//获取设置后table的宽高
-				var table_x_after = table.offsetLeft;
-				var table_y_after = table.offsetTop;
-				var table_width_after = table.offsetWidth;
-				var table_height_after = table.offsetHeight;
-				if(table_y_after + table_height_after <= screen.height / 2 + screen.width / 4) {
-					table.style.top = table_y_after + Math.abs(change) + 'px';
-				}
-				if(table_x_after + table_width_after <= screen.width * 3 / 4) {
-					table.style.left = table_x_after + Math.abs(change) + 'px';
+				//左侧超过界限
+				//			if(table_x_after > screen.width / 4) {
+				//				table.style.left = table_x - Math.abs(change) + 'px';
+				//			}
+				//			//右侧超过界限
+				if(table_x + table_width < screen.width * 3 / 4) {
+					table.style.left = table_x + table_width_after - +table_width + 'px';
 				}
 			}
 
 			//记录本次change
 			changex = x;
 			changey = y;
+			//记录本次x,y,宽,高
+			table_x_after = table.offsetLeft;
+			table_y_after = table.offsetTop;
+			table_width_after = table.offsetWidth;
+			table_height_after = table.offsetHeight;
 		}
 	}
 
