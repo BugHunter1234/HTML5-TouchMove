@@ -101,7 +101,11 @@
 		<!--<img id='img' src="image/u123.png"></img>-->
 	</body>
 	<script type="text/javascript" charset="utf-8">
-		mui.init();
+		mui.init({
+			gestureConfig: {
+				doubletap: true, //开启双击监听
+			}
+		});
 		mui.plusReady(function() {
 			var webview = {
 				height: plus.screen.resolutionHeight - plus.navigator.getStatusbarHeight(), //屏幕高度-状态栏高度
@@ -128,6 +132,7 @@
 			mui('.mui-bar-tab').on('tap', '.mui-btn', function() {
 				mui.toast('确定');
 			});
+
 			//			setTimeout(function() {
 			//				table.appendChild(img);
 			//				//获取img坐标和宽高
